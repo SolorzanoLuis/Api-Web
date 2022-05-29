@@ -11,13 +11,13 @@ router.post("/products", auth, async(req,res) => {
     try{
         // console.log(req.body.allowed_frequency)
 
-        const camposPermitidos = ["product_type","product_name","min_amount","max_amount","min_term","max_term","allowed_frequency","allowed_term_type","year_days","rate","loan_purpose"];
+        // const camposPermitidos = ["product_type","product_name","min_amount","max_amount","min_term","max_term","allowed_frequency","allowed_term_type","year_days","rate","loan_purpose"];
         
-        if (!isComparaArreglos(actualizaciones, camposPermitidos)) {
-            return res
-            .status(400)
-            .send({ error: "Body includes invalid properties..." });
-        }
+        // if (!isComparaArreglos(actualizaciones, camposPermitidos)) {
+        //     return res
+        //     .status(400)
+        //     .send({ error: "Body includes invalid properties..." });
+        // }
 
         const product = new Product(req.body)
         product.save().then((response)=>{
