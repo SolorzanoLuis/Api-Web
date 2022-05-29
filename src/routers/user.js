@@ -275,7 +275,7 @@ router.post("/users/recoverpassword", async(req, res) => {
       return res.status(400).send('User not found');
     }
 
-    sendRecoverPasswordEmail(email, user.name, code);
+    // sendRecoverPasswordEmail(email, user.name, code);
 
     // await User.updateOne({email}, {$set:{code, datecode: moment()}})
     await User.updateOne(
