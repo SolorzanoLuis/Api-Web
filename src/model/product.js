@@ -46,12 +46,12 @@ const productSchema = new mongoose.Schema({
         },
     }],
     allowed_term_type: [{ // Meses, Bimestres
-        type: { // B
+        identifier: { // B
             type: String,
             required: true,
             trim: true
         },
-        description: { // B
+        value: { // B
             type: String,
             required: true,
             trim: true
