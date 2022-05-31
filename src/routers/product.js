@@ -9,15 +9,12 @@ const mongoose = require("mongoose")
 router.post("/products", auth, async(req,res) => {
     //Creamos un nuevo producto
     try{
-        // console.log(req.body.allowed_frequency)
-
-        // const camposPermitidos = ["product_type","product_name","min_amount","max_amount","min_term","max_term","allowed_frequency","allowed_term_type","year_days","rate","loan_purpose"];
+        const actualizaciones = Object.keys(req.body);
+        const camposPermitidos = ["product_type","product_name","min_amount","max_amount","min_term","max_term","allowed_frequency","allowed_term_type","year_days","rate","loan_purpose"];
         
-        // if (!isComparaArreglos(actualizaciones, camposPermitidos)) {
-        //     return res
-        //     .status(400)
-        //     .send({ error: "Body includes invalid properties..." });
-        // }
+        if (!isComparaArreglos(actualizaciones, camposPermitidos)) {
+            return res.status(400).send({ error: "Body includes invalid properties..." });
+        }
 
         const product = new Product(req.body)
         product.save().then((response)=>{
@@ -28,7 +25,7 @@ router.post("/products", auth, async(req,res) => {
 
 
     } catch(e){
-        res.status(400).send(e)
+        res.status(400).send(e + '')
     }
 });
 
@@ -48,6 +45,7 @@ router.get('/products', auth, async(req, res) => {
         if (!data) {
             throw new Error("Not able to find the product");
         }
+        
         res.status(200).send(data);
 
     } catch (e) {
@@ -59,13 +57,12 @@ router.get('/products', auth, async(req, res) => {
 router.patch('/products/:id', auth, async(req, res) => {
 
     try {
+        // console.log(req.body)
         const actualizaciones = Object.keys(req.body.data);
         const camposPermitidos = ["product_type","product_name","min_amount","max_amount","min_term","max_term","allowed_frequency","allowed_term_type","year_days","rate","loan_purpose"];
         
         if (!isComparaArreglos(actualizaciones, camposPermitidos)) {
-            return res
-            .status(400)
-            .send({ error: "Body includes invalid properties..." });
+            return res.status(400).send({ error: "Body includes invalid properties..." });
         }
 
         const data = req.body.data;
@@ -81,7 +78,8 @@ router.patch('/products/:id', auth, async(req, res) => {
 
         res.status(200).send(product);
     } catch (e) {
-        res.status(400).send(JSON.stringify(e));
+        console.log('error' + e);
+        res.status(400).send(JSON.stringify(e + ''));
     }
 
 });
@@ -125,7 +123,6 @@ router.post('/products/restore/:id',auth,async(req, res) => {
     }
 
 });
-
 
 const isComparaArreglos = (actualizar, permitido) => {
     const result = actualizar.every((campo) => permitido.includes(campo));
