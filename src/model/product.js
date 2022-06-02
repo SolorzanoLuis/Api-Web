@@ -78,7 +78,15 @@ const productSchema = new mongoose.Schema({
         description: {
             type: String
         }
-    }]
+    }],
+    logo:{
+        type: Buffer,
+        required: false
+    },
+    avatar:{
+        type: Buffer,
+        required: false
+    }
 
 }, { timestamps: true })
 

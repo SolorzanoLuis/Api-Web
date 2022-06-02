@@ -9,14 +9,12 @@ const mongoose = require("mongoose")
 router.post("/products", auth, async(req,res) => {
     //Creamos un nuevo producto
     try{
-        console.log(req.body);
         const actualizaciones = Object.keys(req.body.data);
         const camposPermitidos = ["product_type","product_name","min_amount","max_amount","min_term","max_term","allowed_frequency","allowed_term_type","year_days","rate","loan_purpose"];
         
         if (!isComparaArreglos(actualizaciones, camposPermitidos)) {
             return res.status(400).send({ error: "Body includes invalid properties..." });
         }
-
 
         const product = new Product(req.body.data)
         product.save().then((response)=>{
@@ -59,7 +57,7 @@ router.get('/products', auth, async(req, res) => {
 router.patch('/products/:id', auth, async(req, res) => {
 
     try {
-        // console.log(req.body)
+        // console.log(req.body.data)
         const actualizaciones = Object.keys(req.body.data);
         const camposPermitidos = ["product_type","product_name","min_amount","max_amount","min_term","max_term","allowed_frequency","allowed_term_type","year_days","rate","loan_purpose"];
         

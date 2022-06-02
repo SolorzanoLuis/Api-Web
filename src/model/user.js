@@ -5,21 +5,33 @@ const jwt = require('jsonwebtoken')
 
 const axios = require('axios');
 const url = require('url');
+const mongoose_delete = require('mongoose-delete');
 
 const userSchema = new mongoose.Schema({
-    name: {
+    client_id: {
         type: String,
         required: false,
-        trim: true
+    },
+    employee_id: {
+        type: String,
+        required: false,
+    },
+    name: {
+        type: String,
+        trim: true,
+        uppercase: true,
+        required: false
     },
     lastname: {
         type: String,
         trim: true,
+        uppercase: true,
         required: false
     },
     second_lastname: {
         type: String,
         trim: true,
+        uppercase: true,
         required: false
     },
     email:{
@@ -41,10 +53,6 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Longitud minimo 6 ')
             }
         }
-    },
-    dob: {
-        type: Date,
-        required: false,
     },
     selfi:{
         type: Buffer,
@@ -69,17 +77,17 @@ const userSchema = new mongoose.Schema({
             type: Date,
             required: false
         }
-    }],
-    is_client: {
-        type:Boolean,
-        required: true,
-        default:false
-    },
-    is_employee:{
-        type:Boolean,
-        required: true,
-        default:false
-    },
+    }]
+    // is_client: {
+    //     type:Boolean,
+    //     required: true,
+    //     default:false
+    // },
+    // is_employee:{
+    //     type:Boolean,
+    //     required: true,
+    //     default:false
+    // }
 },
 { timestamps: true } )
 
@@ -134,8 +142,6 @@ userSchema.methods.toJSON = function(){
     delete userPublic.tokens
     delete userPublic.selfi
     delete userPublic.recoverpassword
-    // delete userPublic.is_client,
-    // delete userPublic.is_employee
 
     return userPublic
 
@@ -158,6 +164,8 @@ userSchema.statics.findUserByCredentials = async ( email, password ) => {
 
     return user
 }
+
+userSchema.plugin(mongoose_delete, { deletedAt: true, deletedBy : true, overrideMethods: 'all'});
 
 const User = mongoose.model('User',userSchema )
 
