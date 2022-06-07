@@ -129,7 +129,6 @@ router.get("/employees", auth, async(req, res) =>{
             employee[i].workstation = workstation.hierarchy_name;
         }
         
-        console.log(employee)
         res.status(200).send(employee);
     } catch(e){
         res.status(400).send(e + '');
