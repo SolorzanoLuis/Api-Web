@@ -6,7 +6,7 @@ const userRouter = require('./routers/user')
 const productRouter =  require('./routers/product')
 const clientRouter = require('./routers/client')
 const employeeRouter = require('./routers/employee')
-const positionRouter = require('./routers/positions')
+const hierarchyRouter = require('./routers/hierarchy')
 
 const app = express()
 const options = cors.CorsOptions = {
@@ -19,7 +19,7 @@ app.use(userRouter)
 app.use(productRouter)
 app.use(clientRouter)
 app.use(employeeRouter)
-app.use(positionRouter)
+app.use(hierarchyRouter)
 
 
 module.exports = app

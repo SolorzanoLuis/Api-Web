@@ -2,7 +2,8 @@ const express = require("express");
 const router =  new express.Router();
 const User = require("../model/user");
 const Employee = require("../model/employee");
-const auth = require("../middleware/auth")
+const Hierarchy = require("../model/hierarchy");
+const auth = require("../middleware/auth");
 
 
 // router.post("/employees", auth, async(req, res) =>{
@@ -78,7 +79,6 @@ router.post("/employees", auth, async(req, res) =>{
         });
 
         data.password = await User.passwordHashing(data.password)
-
         await employee.save().then( async (response)=>{
             console.log('Employee created...');
             const user = new User({
@@ -122,7 +122,14 @@ router.get("/employees", auth, async(req, res) =>{
         if (!employee || employee.length === 0) {
             throw new Error("Not able to find the employee");
         }
+
+        for(let i=0; i < employee.length; i++){
+            const _id = employee[i].hierarchy_id;
+            const workstation = await Hierarchy.findOne({_id});
+            employee[i].workstation = workstation.hierarchy_name;
+        }
         
+        console.log(employee)
         res.status(200).send(employee);
     } catch(e){
         res.status(400).send(e + '');
@@ -250,7 +257,7 @@ const removeAccents = (str) => {
 }
 
 const comparar = (entrada) =>{
-    const permitido = ["name","lastname","second_lastname","email","password","dob","position_id"];
+    const permitido = ["name","lastname","second_lastname","email","password","dob","hierarchy_id"];
     const result = entrada.every(campo => permitido.includes(campo));
     return result;
 }
