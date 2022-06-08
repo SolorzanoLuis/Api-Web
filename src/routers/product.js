@@ -110,7 +110,7 @@ router.patch('/products/:id', auth, async(req, res) => {
             return res.status(400).send({ error: "Body includes invalid properties..." });
         }
 
-        console.log(data);
+        // console.log(data);
         // if(req.files.logo != undefined){
         //     const logo = req.files.logo;
         //     const bufferlogo = await convertToBuffer(logo[0]);
