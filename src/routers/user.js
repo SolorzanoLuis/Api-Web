@@ -36,11 +36,10 @@ router.post("/users/signup", async (req, res) => {
     };
 
     const fullName = data.name.trim() + ' ' + data.lastname.trim() + ' ' + data.second_lastname.trim();
-    
       const isClientExist = await Client.findOne({email: data.email});
       
       if(isClientExist){
-        console.log("cliente encontrado")
+        // console.log("cliente encontrado")
         const FullNameClient = isClientExist.name + ' ' + isClientExist.lastname + ' ' + isClientExist.second_lastname;
 
         if(fullName != FullNameClient){
@@ -61,7 +60,7 @@ router.post("/users/signup", async (req, res) => {
         });
         
       } else{
-        console.log("No se encontró el cliente") // Si no se encuentra el cliente se debe registrar como un usuario común
+        // console.log("No se encontró el cliente") // Si no se encuentra el cliente se debe registrar como un usuario común
 
         //guardamos los datos en signup
         const signup = new Signup({ code, ...data });
@@ -171,8 +170,6 @@ router.patch("/users/me", auth, async (req, res) => {
         update.second_lastname = removeAccents(update.second_lastname)
     }
 
-    const data = update;
-
     actualizaciones.forEach((valor) => (req.user[valor] = update[valor]));
     await req.user.save();
 
@@ -186,7 +183,7 @@ router.patch("/users/me", auth, async (req, res) => {
       }
     }
     //Actualizar si es empleado, función de la web
-    if(req.body.is_employee != undefined || req.body.is_employee != ""){
+    if(req.body.employee_id != undefined || req.body.employee_id != ""){
       const _id = req.user.employee_id;
       const employee = await Employee.findOne({_id});
       if(employee != null){
