@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 
 // Cambiar nombre por hierarchy
 const hierarchySchema = new mongoose.Schema({
@@ -6,9 +7,13 @@ const hierarchySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    department:{ //Area
+    // department:{ //Area
+    //     type: String,
+    //     required: true,
+    // },
+    workstation: {
         type: String,
-        required: true,
+        trim: true
     },
     isroot: {
         type: Boolean,
@@ -17,17 +22,13 @@ const hierarchySchema = new mongoose.Schema({
     parent: [//2 valores => 1- Id, 2- Padre 
         
     ],
-    workstation: {
-        type: String,
-        trim: true
-    },
     name_employee: {
         type: String,
         trim: true
     }
 })
 
-
+hierarchySchema.plugin(mongoose_delete, { deletedAt: true, deletedBy : true, overrideMethods: 'all'});
 
 const Hierarchy = mongoose.model('Hierarchy', hierarchySchema)
 module.exports = Hierarchy
