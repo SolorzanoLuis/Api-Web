@@ -13,7 +13,8 @@ const hierarchySchema = new mongoose.Schema({
     // },
     workstation: {
         type: String,
-        trim: true
+        trim: true,
+        required: true,
     },
     isroot: {
         type: Boolean,

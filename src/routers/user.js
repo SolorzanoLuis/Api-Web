@@ -90,20 +90,24 @@ router.post("/users/signup", async (req, res) => {
 
     const data = req.body;
 
+    //Buscamos si el email ya se encuentra registrado en la colección de usuarios
+    const existingUser = await User.findOne({ email: data.email });
+    if(existingUser){
+      throw new Error ("The email is already linked to an account")
+    }
+
     const signup = new Signup({ code, ...data });
     await signup.save();
 
-    sendConfirmationEmail(req.body.email, req.body.name, code)
+    // sendConfirmationEmail(req.body.email, req.body.name, code)
     return res.status(201).send({
-      signup
-      // signup: {
-      //   id: signup._id,
-      //   name: signup.name,
-      //   lastname: signup.lastname,
-      //   second_lastname: signup.second_lastname,
-      //   email: signup.email,
-      //   code: signup.code
-      // },
+      signup: {
+        name: signup.name,
+        lastname: signup.lastname,
+        second_lastname: signup.second_lastname,
+        email: signup.email,
+        code: signup.code
+      },
     });
     
   } catch (err) {
@@ -128,41 +132,22 @@ router.post("/users/create/:signup_code", async (req, res) => {
       throw new Error("Confirmation code has expired!");
     }
 
-    const employee = new Employee({
+    const user = new User({
       name: signup.name,
       lastname: signup.lastname,
       second_lastname: signup.second_lastname,
-      dob: signup.dob,
-      email: signup.email
+      email: signup.email,
+      password: signup.password
     });
+    
+    const token = await user.generateAuthToken();
+    await user.save();
+    // sendWelcomeEmail(user.email, user.name)
+    await Signup.findOneAndDelete({email: signup.email})
 
-    await employee.save().then( async (response)=>{
 
-      const user = new User({
-        employee_id: response._id,
-        name: signup.name,
-        lastname: signup.lastname,
-        second_lastname: signup.second_lastname,
-        email: signup.email,
-        password: signup.password
-      });
-      
-      await user.save().then(async (data) => {
-        const token = await user.generateAuthToken();
-        await Signup.findOneAndDelete({ _id: signup._id })
-        sendWelcomeEmail(user.email, user.name)
-        return res.status(200).send({data, token});
-      })
-      .catch(async(e) =>{
-        await Employee.findOneAndDelete({ _id: response._id })
-        console.log("EmployeeDeleted");
-        throw new Error(e);
-      })
-
-    }).catch(async(e) =>{
-        res.status(400).send(e + '');
-    });
-
+    res.status(201).send({ user, token });
+    
   } catch (e) {
     console.log(e)
     res.status(400).send(e + '');
@@ -260,7 +245,7 @@ router.delete("/users/me", auth, async (req, res) => {
   try {
     await req.user.remove();
 
-    sendGoodbyEmail(req.user.email,req.user.name)
+    // sendGoodbyEmail(req.user.email,req.user.name)
 
     res.send(req.user);
   } catch (e) {
@@ -328,7 +313,7 @@ router.post("/users/recoverpassword", async(req, res) => {
       return res.status(400).send('User not found');
     }
 
-    sendRecoverPasswordEmail(email, user.name, code);
+    // sendRecoverPasswordEmail(email, user.name, code);
 
     // await User.updateOne({email}, {$set:{code, datecode: moment()}})
     await User.updateOne(
@@ -441,8 +426,8 @@ router.post("/users/me/avatar", auth, upload.single("avatar"), async (req, res) 
   
       return await req.user.save()
       .then(() => {
-        // res.status(200).send(req.user);
-        res.status(200).send('Image successfully uploaded');
+        res.status(200).send(req.user);
+        // res.status(200).send('Image successfully uploaded');
       })
       .catch(() => {
         res.status(400).send('Could not update');
@@ -478,9 +463,12 @@ router.delete("/users/me/avatar", auth, async (req, res) => {
 router.get("/users/:id/avatar", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    // console.log(user)
 
-    if (!user || !user.selfi) {
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    if (!user.selfi) {
       throw new Error('No avatar has been uploaded for this user');
     }
 

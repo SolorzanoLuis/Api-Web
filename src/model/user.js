@@ -8,14 +8,8 @@ const url = require('url');
 const mongoose_delete = require('mongoose-delete');
 
 const userSchema = new mongoose.Schema({
-    client_id: {
-        type: String,
-        required: false,
-    },
-    employee_id: {
-        type: String,
-        required: false,
-    },
+    client_id: {},
+    employee_id: {},
     name: {
         type: String,
         trim: true,
@@ -132,9 +126,11 @@ userSchema.methods.toJSON = function(){
     delete userPublic.tokens
     delete userPublic.selfi
     delete userPublic.recoverpassword
-    delete userPublic.deleted
+    // delete userPublic.deleted
+    delete userPublic.deletedAt
     delete userPublic.createdAt
     delete userPublic.updatedAt
+    delete userPublic.__v
 
     return userPublic
 

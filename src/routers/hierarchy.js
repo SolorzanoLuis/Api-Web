@@ -62,7 +62,45 @@ router.get("/hierarchies",auth,async(req,res) => {
     }
 });
 
-router.patch('/hierarchies/:id',auth, async(req, res) => {
+router.get("/availableHierarchies",auth, async(req, res) => {
+
+    try{
+
+        const positionsOccupied = [];
+        const positions = [];
+
+        const employees = await Employee.find();
+        for(let i =0; i< employees.length; i++){
+            positionsOccupied.push(employees[i].hierarchy_id)
+        }
+
+        const hierarchies = await Hierarchy.find();
+        for(let i =0; i< hierarchies.length; i++){
+            positions.push(hierarchies[i]._id)
+        }
+
+        const availables = filtrar(positions, positionsOccupied);
+        // console.log(availables.length)
+        // if(availables.length === 0){
+        //     throw new Error("No positions available")
+        // }
+
+        const result = [];
+
+
+        for (let i = 0; i < availables.length; i++){
+            result.push(await Hierarchy.findOne({ _id: availables[i] }));
+        }
+
+        res.status(200).send(result);
+        
+    } catch(e){
+        res.status(404).send(e + '');
+    }
+
+})
+
+router.patch("/hierarchies/:id",auth, async(req, res) => {
     try{
 
         const _id = req.params.id;
@@ -89,7 +127,7 @@ router.patch('/hierarchies/:id',auth, async(req, res) => {
     }
 });
 
-router.delete('/hierarchies/:id', async(req, res)=> {
+router.delete("/hierarchies/:id", async(req, res)=> {
     try{
         const _id = req.params.id;
 
@@ -145,6 +183,16 @@ const comparar = (entrada) => {
     const validos = ["_id","hierarchy_name", "workstation", "isroot", "parent"];
     const res = entrada.every(campo => (validos.includes(campo)));
     return res;
+}
+
+const filtrar = (disponibles, ocupados) => {
+
+    for (let i = 0; i < ocupados.length; i++) {
+        disponibles = disponibles.filter( val => val.toString()  !== ocupados[i].toString() );
+    } 
+    
+    return disponibles;
+
 }
 
 module.exports = router;
