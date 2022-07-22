@@ -1,7 +1,7 @@
 const express = require('express');
 require('./db/mongoose')
+require('./db/populateData');
 const cors = require('cors');
-// require('./db/populateData');
 
 
 const userRouter = require('./routers/user')
