@@ -1,7 +1,7 @@
 const express = require('express');
 require('./db/mongoose')
 const cors = require('cors');
-require('./db/populateData');
+// require('./db/populateData');
 
 
 const userRouter = require('./routers/user')
@@ -20,6 +20,7 @@ const options = cors.CorsOptions = {
 };
 
 app.use(express.json({limit: '1mb'}))
+app.use(cors(options));
 app.use(userRouter)
 app.use(productRouter)
 app.use(clientRouter)
